@@ -1,7 +1,7 @@
 package main
 
-import "fmt"
+import "main/api"
 
 func main() {
-    fmt.Println("Hello, world.")
+	api.Run()
 }
