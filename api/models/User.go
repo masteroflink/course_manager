@@ -102,14 +102,15 @@ func (u *User) GetAllUsers(db *gorm.DB) (*[]User, error) {
 func (u *User) GetUser(db *gorm.DB, uid uint32) (*User, error) {
 	user := User{}
 	err := db.Debug().First(&user, uid).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return &User{}, errors.New("User Not Found")
+	}
+
 	if err != nil {
 		return &User{}, err
 	}
 
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return &User{}, errors.New("User Not Found")
-	}
-	return u, err
+	return &user, err
 }
 
 func (u *User) UpdateUser(db *gorm.DB, uid uint32) (*User, error) {

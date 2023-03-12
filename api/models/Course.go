@@ -68,11 +68,12 @@ func (c *Course) GetAllCourses(db *gorm.DB) (*[]Course, error) {
 func (c *Course) GetCourse(db *gorm.DB, cid uint32) (*Course, error) {
 	course := Course{}
 	err := db.Debug().Preload("Students").Preload("Professors").First(&course, cid).Error
-	if err != nil {
-		return &Course{}, err
-	}
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return &Course{}, errors.New("Course Not Found")
+	}
+
+	if err != nil {
+		return &Course{}, err
 	}
 
 	return &course, nil

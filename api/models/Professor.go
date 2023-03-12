@@ -61,12 +61,12 @@ func (p *Professor) GetAllProfessors(db *gorm.DB) (*[]Professor, error) {
 func (p *Professor) GetProfessor(db *gorm.DB, pid uint32) (*Professor, error) {
 	professor := Professor{}
 	err := db.Debug().Preload("Courses").First(&professor, pid).Error
-	if err != nil {
-		return &Professor{}, err
-	}
-
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return &Professor{}, errors.New("Professor Not Found")
+	}
+
+	if err != nil {
+		return &Professor{}, err
 	}
 
 	return &professor, nil

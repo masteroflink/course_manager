@@ -70,11 +70,11 @@ func (s *Student) GetAllStudents(db *gorm.DB) (*[]Student, error) {
 func (s *Student) GetStudent(db *gorm.DB, sid uint32) (*Student, error) {
 	student := Student{}
 	err := db.Debug().Preload("Courses").First(&student, sid).Error
-	if err != nil {
-		return &Student{}, err
-	}
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return &Student{}, errors.New("Student Not Found")
+	}
+	if err != nil {
+		return &Student{}, err
 	}
 	return s, err
 }
