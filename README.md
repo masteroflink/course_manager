@@ -1,4 +1,4 @@
-# School Manager
+# Course Manager
 
 This CRUD API is written in Go and manages data to use in a school (students, professor, courses, users).
 
@@ -96,9 +96,9 @@ This CRUD API is written in Go and manages data to use in a school (students, pr
   ID (uint32): unique identifier,
   Department (string),
   CourseNumber (string),
-  MaxCapacity (number): number of students allowed in class,
-  Professors (uint32[]): Ids of professors teaching this course,
-  Students (uint32[]): Ids of students enrolled in course,
+  MaxCapacity (int): number of students allowed in class,
+  Professors (Professor[]): Ids of professors teaching this course,
+  Students (Student[]): Ids of students enrolled in course,
   UpdatedAt (DateTime),
   CreatedAt (DateTime)
 }
@@ -120,26 +120,37 @@ Create `.env` file such as the following
 ```
 # Postgres Live
 API_SECRET=
-DB_HOST=localhost
-DB_USER=postgres
+DB_HOST=db
+DB_USER=test_user
 DB_PASSWORD=postgrespw
 DB_NAME=course_manager
-DB_PORT=32768
+DB_PORT=5432
 
 # Postgres Test
-TestApiSecret=
-TestDbHost=localhost
-TestDbUser=postgres
-TestDbPassword=postgrespw
-TestDbName=course_manager_test
-TestDbPort=32768
+TEST_API_SECRET=
+TEST_DB_HOST=db
+TEST_DB_USER=test_user
+TEST_DB_PASSWORD=postgrespw
+TEST_DB_NAME=course_manager_test
+TEST_DB_PORT=5432
+
+# Used to create superuser
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgrespw
+
+# Used by pgadmin service
+PGADMIN_DEFAULT_EMAIL=live@admin.com
+PGADMIN_DEFAULT_PASSWORD=password
 ```
 
 API secrets can be anything. DB user and password is what you made your user for the database.
 
 ### Run the program
 
-`go run main.go`
+This will spin up a docker container with pgadmin4, postgresql db, and course_manager application.
+
+run the following command
+`docker-compose up`
 
 ### Authentication
 
@@ -176,7 +187,7 @@ Updates only the fields given for a specified user given the id. Updates given f
 `/users/:user_id`
 Example Body
 
-```
+```json
 {
   "name": {
     "first": "Mickey",
@@ -196,15 +207,15 @@ Creates new User
 `/users`
 Example Body
 
-```
+```json
 {
-  name: {
-    first (string): "Mickey",
-    middle (string): "Disney",
-    last (string): "Mouse"
+  "name": {
+    "first": "Mickey",
+    "middle": "Disney",
+    "last": "Mouse"
   },
-  email: "mickeytest@example.com",
-  password: "password"
+  "email": "mickeytest@example.com",
+  "password": "password"
 }
 ```
 
@@ -235,30 +246,30 @@ Updates only the fields given for a specified user given the id
 `/students/:student_id`
 Example Body
 
-```
+```json
 {
   "name": {
     "first": "Mickey",
     "middle": "Disney",
     "last": "Mouse"
   },
-  Address: {
-    raw: "136 Highland Dr Burkburnett, TX, 76354",
-    street_number: "136",
-    street_name: "Highland Dr",
-    city: "Burkburnett",
-    state: "Texas",
-    country: "United States of America",
-    country_code: "US",
-    postal_code: "76354"
+  "address": {
+    "raw": "136 Highland Dr Burkburnett, TX, 76354",
+    "street_number": "136",
+    "street_name": "Highland Dr",
+    "city": "Burkburnett",
+    "state": "Texas",
+    "country": "United States of America",
+    "country_code": "US",
+    "postal_code": "76354"
   },
-  email: "mickeytest@example.com",
-  phone: "(940) 569-3810",
-  gpa: 3.15,
-  credits: 20,
-  attempted_credits: 20,
-  degree_level: "bachelors",
-  field_of_study: "Mathematics"
+  "email": "mickeytest@example.com",
+  "phone": "(940) 569-3810",
+  "gpa": 3.15,
+  "credits": 20,
+  "attempted_credits": 20,
+  "degree_level": "bachelors",
+  "field_of_study": "Mathematics"
 }
 ```
 
@@ -270,30 +281,30 @@ Create new Student
 `/students`
 Example Body
 
-```
+```json
 {
   "name": {
     "first": "Mickey",
     "middle": "Disney",
     "last": "Mouse"
   },
-  Address: {
-    raw: "136 Highland Dr Burkburnett, TX, 76354",
-    street_number: "136",
-    street_name: "Highland Dr",
-    city: "Burkburnett",
-    state: "Texas",
-    country: "United States of America",
-    country_code: "US",
-    postal_code: "76354"
+  "address": {
+    "raw": "136 Highland Dr Burkburnett, TX, 76354",
+    "street_number": "136",
+    "street_name": "Highland Dr",
+    "city": "Burkburnett",
+    "state": "Texas",
+    "country": "United States of America",
+    "country_code": "US",
+    "postal_code": "76354"
   },
-  email: "mickeytest@example.com",
-  phone: "(940) 569-3810",
-  gpa: 3.15,
-  credits: 20,
-  attempted_credits: 20,
-  degree_level: "bachelors",
-  field_of_study: "Mathematics"
+  "email": "mickeytest@example.com",
+  "phone": "(940) 569-3810",
+  "gpa": 3.15,
+  "credits": 20,
+  "attempted_credits": 20,
+  "degree_level": "bachelors",
+  "field_of_study": "Mathematics"
 }
 ```
 
@@ -323,10 +334,6 @@ Returns all data for given professor
 
 Updates only the fields given for a specified faculty given the id
 `/professor/:professor_id`
-Body
-
-- Allowed fields
-
 Example Body
 
 ```json
@@ -337,34 +344,17 @@ Example Body
     "last": "Duck"
   },
   "address": {
-    raw: "136 Highland Dr Burkburnett, TX, 76354",
-    street_number: "136",
-    street_name: "Highland Dr",
-    city: "Burkburnett",
-    state: "Texas",
-    country: "United States of America",
-    country_code: "US",
-    postal_code: "76354"
+    "raw": "136 Highland Dr Burkburnett, TX, 76354",
+    "street_number": "136",
+    "street_name": "Highland Dr",
+    "city": "Burkburnett",
+    "state": "Texas",
+    "country": "United States of America",
+    "country_code": "US",
+    "postal_code": "76354"
   },
   "email": "donaldtest@example.com",
   "phone": "(940) 569-3810",
-  "education" [
-    {
-      "school": "University of Illinois",
-      "graduation_date": "2019-12",
-      "gpa": 3.6,
-      "degree_level": "Doctorates",
-      "field_of_study: "Computer Science"
-    }
-  ],
-  "office_hour": [
-    {
-      "start": ,
-      "end": ,
-      "room":
-    }
-  ],
-  "courses" (uint32[]): [123, 456],
   "position": "Associate Professor"
 }
 ```
@@ -396,16 +386,6 @@ Example Body
   },
   "email": "donaldtest@example.com",
   "phone": "(940) 569-3810",
-  "education" [
-    {
-      "school": "University of Illinois",
-      "graduation_date": "2019-12",
-      "gpa": 3.6,
-      "degree_level": "Doctorates",
-      "field_of_study: "Computer Science"
-    }
-  ],
-  "courses": [],
   "position": "Associate Professor"
 }
 ```
@@ -440,15 +420,14 @@ Parameters
 
 Updates only the fields given for a specified course given the id
 `/course/:course_id`
-
 Example Body
 
 ```json
 {
-  college: ,
-  department: ,
-  course_number: ,
-  max_capacity: ,
+  "college": "Engineering",
+  "department": "Computer Science",
+  "course_number": "CS101",
+  "max_capacity": 200
 }
 ```
 
@@ -462,18 +441,10 @@ Example Body
 
 ```json
 {
-  department: ,
-  course_number: ,
-  max_capacity: ,
-  session_times [
-    {
-      start: ,
-      end: ,
-      room:
-    }
-  ],
-  professors: [],
-  students: []
+  "college": "Engineering",
+  "department": "Computer Science",
+  "course_number": "CS101",
+  "max_capacity": 200
 }
 ```
 
