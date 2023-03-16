@@ -28,7 +28,7 @@ func ValidatePhoneNumber(value string) error {
 
 func ValidateEmail(value string) error {
 	if err := checkmail.ValidateFormat(value); err != nil {
-		return errors.New("Required email")
+		return errors.New("Invalid Email")
 	}
 	return nil
 }

@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"io"
+	"log"
 	"main/api/auth"
 	"main/api/formaterror"
 	"main/api/models"
@@ -20,9 +21,14 @@ func (server *Server) SignIn(email string, password string) (string, error) {
 		return "", err
 	}
 	err = models.VerifyPassword(user.Password, password)
-	if err != nil && err == bcrypt.ErrMismatchedHashAndPassword {
+	if err == bcrypt.ErrMismatchedHashAndPassword {
 		return "", err
 	}
+
+	if err != nil {
+		log.Fatalf("Error: %v", err)
+	}
+
 	return auth.CreateToken(user.ID)
 }
 

@@ -53,6 +53,9 @@ func (u *User) Validate(action string) error {
 		if u.Password == "" {
 			return errors.New("Required Password")
 		}
+		if u.Email == "" {
+			return errors.New("Required Email")
+		}
 		if err := ValidateEmail(u.Email); err != nil {
 			return err
 		}
@@ -74,6 +77,9 @@ func (u *User) Validate(action string) error {
 		}
 		if u.Password == "" {
 			return errors.New("Required Password")
+		}
+		if u.Email == "" {
+			return errors.New("Required Email")
 		}
 		if err := ValidateEmail(u.Email); err != nil {
 			return err
