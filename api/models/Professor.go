@@ -30,7 +30,9 @@ func (p *Professor) Prepare() {
 }
 
 func (p *Professor) Validate() error {
-	ValidateName(&p.Name)
+	if err := ValidateName(&p.Name); err != nil {
+		return err
+	}
 
 	if err := ValidateEmail(p.Email); err != nil {
 		return err

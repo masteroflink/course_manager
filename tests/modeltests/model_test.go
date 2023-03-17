@@ -15,13 +15,9 @@ import (
 
 var server = controllers.Server{}
 var userInstance = models.User{}
-var studentInstance = models.Student{}
-var professorInstance = models.Professor{}
-var courseInstance = models.Course{}
 
 func TestMain(m *testing.M) {
-	var err error
-	err = godotenv.Load(os.ExpandEnv("../../.env"))
+	err := godotenv.Load(os.ExpandEnv("../../.env"))
 	if err != nil {
 		log.Fatalf("Error gettting env %v\n", err)
 	}

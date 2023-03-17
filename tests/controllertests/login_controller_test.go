@@ -58,9 +58,13 @@ func TestSignIn(t *testing.T) {
 }
 
 func TestLogin(t *testing.T) {
-	helpers.RefreshUserTable(server.DB)
+	err := helpers.RefreshUserTable(server.DB)
 
-	_, err := helpers.SeedOneUser(server.DB)
+	if err != nil {
+		log.Fatalf("Error refreshing user table: %v", err)
+	}
+
+	_, err = helpers.SeedOneUser(server.DB)
 	if err != nil {
 		fmt.Printf("This is the error %v\n", err)
 	}
@@ -125,7 +129,7 @@ func TestLogin(t *testing.T) {
 
 		if v.statusCode == 422 && v.errorMessage != "" {
 			responseMap := make(map[string]interface{})
-			err = json.Unmarshal([]byte(rr.Body.String()), &responseMap)
+			err = json.Unmarshal(rr.Body.Bytes(), &responseMap)
 			if err != nil {
 				t.Errorf("Cannot convert to json: %v", err)
 			}

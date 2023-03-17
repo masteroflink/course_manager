@@ -149,6 +149,11 @@ func (server *Server) EnrollStudent(w http.ResponseWriter, r *http.Request) {
 	course := models.Course{}
 	enrolledCourse, err := course.EnrollStudent(server.DB, uint32(cid), uint32(sid))
 
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+
 	responses.JSON(w, http.StatusOK, enrolledCourse)
 }
 
@@ -169,6 +174,11 @@ func (server *Server) RemoveStudent(w http.ResponseWriter, r *http.Request) {
 
 	course := models.Course{}
 	enrolledCourse, err := course.RemoveStudent(server.DB, uint32(cid), uint32(sid))
+
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
 
 	responses.JSON(w, http.StatusOK, enrolledCourse)
 }
@@ -191,6 +201,11 @@ func (server *Server) AssignProfessor(w http.ResponseWriter, r *http.Request) {
 	course := models.Course{}
 	enrolledCourse, err := course.AssignProfessor(server.DB, uint32(cid), uint32(pid))
 
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+
 	responses.JSON(w, http.StatusOK, enrolledCourse)
 }
 
@@ -211,6 +226,11 @@ func (server *Server) RemoveProfessor(w http.ResponseWriter, r *http.Request) {
 
 	course := models.Course{}
 	enrolledCourse, err := course.RemoveProfessor(server.DB, uint32(cid), uint32(pid))
+
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
 
 	responses.JSON(w, http.StatusOK, enrolledCourse)
 }

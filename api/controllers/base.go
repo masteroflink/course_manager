@@ -31,7 +31,11 @@ func (server *Server) Initialize(DbUser, DbPassword, DbPort, DbHost, DbName stri
 		fmt.Printf("Connected to the %s database", Dbdriver)
 	}
 
-	server.DB.Debug().AutoMigrate(&models.User{}, &models.Student{})
+	err = server.DB.Debug().AutoMigrate(&models.User{}, &models.Student{})
+
+	if err != nil {
+		log.Fatal("Error: ", err)
+	}
 
 	server.Router = mux.NewRouter()
 

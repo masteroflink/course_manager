@@ -103,7 +103,7 @@ func TestCreateUser(t *testing.T) {
 		handler.ServeHTTP(rr, req)
 
 		responseMap := make(map[string]interface{})
-		err = json.Unmarshal([]byte(rr.Body.String()), &responseMap)
+		err = json.Unmarshal(rr.Body.Bytes(), &responseMap)
 		if err != nil {
 			fmt.Printf("Cannot convert to json: %v", err)
 		}
@@ -135,7 +135,7 @@ func TestGetUsers(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	var users []models.User
-	err = json.Unmarshal([]byte(rr.Body.String()), &users)
+	err = json.Unmarshal(rr.Body.Bytes(), &users)
 	if err != nil {
 		log.Fatalf("Cannot convert to json: %v", err)
 	}
@@ -186,7 +186,7 @@ func TestGetUserByID(t *testing.T) {
 		handler.ServeHTTP(rr, req)
 
 		responseMap := make(map[string]interface{})
-		err = json.Unmarshal([]byte(rr.Body.String()), &responseMap)
+		err = json.Unmarshal(rr.Body.Bytes(), &responseMap)
 		if err != nil {
 			log.Fatalf("Cannot convert to json: %v", err)
 		}
